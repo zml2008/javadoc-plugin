@@ -27,12 +27,6 @@ import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.artifacts.ConfigurationPublications;
 import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.artifacts.DependencySet;
-import org.gradle.api.attributes.Attribute;
-import org.gradle.api.attributes.AttributeContainer;
-import org.gradle.api.attributes.Category;
-import org.gradle.api.attributes.DocsType;
-import org.gradle.api.attributes.Usage;
-import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
@@ -96,18 +90,7 @@ public class AggregateJavadocPlugin implements Plugin<Project> {
 				sourcesPath.setCanBeResolved(true);
 				sourcesPath.setCanBeConsumed(false);
 				sourcesPath.extendsFrom(aggregatedConfiguration);
-				sourcesPath.attributes(new Action<AttributeContainer>() {
-					@Override
-					public void execute(AttributeContainer attributes) {
-						ObjectFactory objects = project.getObjects();
-						attributes.attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.class, Usage.JAVA_RUNTIME));
-						attributes.attribute(Category.CATEGORY_ATTRIBUTE,
-								objects.named(Category.class, Category.DOCUMENTATION));
-						attributes.attribute(DocsType.DOCS_TYPE_ATTRIBUTE,
-								objects.named(DocsType.class, DocsType.SOURCES));
-						attributes.attribute(Attribute.of("org.gradle.docselements", String.class), "sources");
-					}
-				});
+				AggregateJavadocConfigurations.configureAggregateSourcesAttributes(project.getObjects(), sourcesPath);
 				sourcesPath.outgoing(new Action<ConfigurationPublications>() {
 					@Override
 					public void execute(ConfigurationPublications publications) {
